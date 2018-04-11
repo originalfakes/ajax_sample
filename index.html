@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<title>台南市停車場查詢</title>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAImKwvVqs1n-u7ZuJdu9vOw4htQDcBjdw"></script>
+<style>
+	* {
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+	body {
+		height: auto;
+		font-family: "Microsoft JhengHei";
+		background-color: #DDDDDD;
+		opacity: 0.8;
+	}
+	.title ,.container, #select, .pos{
+		margin: auto;
+		text-align:center;
+	}
+	#select {
+		margin-bottom: 10px;
+		margin-top: 10px;
+		color: 	#008800;
+		font-size: 20px;
+		font-weight: 700;
+	}
+	.title {
+		background-color: #66FF66;
+		width: 100%;
+		opacity: 0.8;
+		color: #FFFFFF;
+		margin: 0 auto;
+		padding-top: 10px;
+		padding-bottom: 10px;
+	}
+	.showDate {
+		position: absolute;
+		right: 30px;
+		top: 15px;
+		font-size: 20px;
+		font-weight: 900;
+		color: white;
+		cursor: pointer;
+	}
+	ul {
+		list-style-type: none;
+	}
+	.show {
+		width: 60%;
+		height: auto;
+		margin: 0 auto;
+		margin-top: 10px;
+		color: #007799;
+		text-align: center;
+	}
+	.district {
+		border-radius: 8px;
+		border: 2px solid #FFCC22;
+		background-color: #FFEE99;
+		padding: 5px;
+		margin-top: 3px;
+	}
+	#north, #south, #east {
+		padding-left: 11.5px;
+		padding-right: 11.5px;
+	}
+	.pos {
+		color: #FF3333;
+		font-size: 20px;
+		margin-top: 30px;
+	}
+	.map_pos {
+		background-color: #66FF66;
+		padding: 3px;
+		font-size: 15px;
+		opacity: 0.8;
+		color: #FFFFFF;
+		margin-left: 5px;
+	}
+	#map {
+		width: 50%;
+		height: 500px; 
+		margin: 0 auto; 
+		margin-top: 50px; 
+		margin-bottom: 20px;
+	}
+	#toTop {
+		display: none;
+		position: fixed;
+		bottom: 20px;
+	  	right: 60px;
+	  	background-color: #FF3333;
+	  	color: white;
+	  	padding: 10px;
+	  	border-radius: 4px;
+	  	cursor: pointer;
+	  	font-size: 20px;
+		}
+	@media screen and (max-width: 768px) {
+		#map {
+			height: 500px;
+			width: 85%;
+		}
+		.showDate {
+			position: absolute;
+			top: 20px;
+			right: 8px;
+			font-size: 15px;
+		}
+		#toTop {
+			position: fixed;
+			bottom: 20px;
+			right: 5px;
+		  	background-color: #FF3333;
+		  	color: white;
+		  	padding: 5px;
+		  	border-radius: 4px;
+		  	cursor: pointer;
+		  	font-size: 14px;
+		}
+	}
+</style>
+</head>
+<body>
+	<div id="main">
+		<div class="title">
+			<h1>台南市停車位查詢</h1>
+		</div>
+		<div class="showDate" id="time"></div>
+		<hr>
+		<div id="select">
+			<input type="radio" name="select" value="free">免費停車位查詢
+			<input type="radio" name="select" value="notfree">收費停車位查詢
+		</div>
+		<div class="mainControl">
+			<div class="container">
+				<button id="center" name="中西區" class="district">中西區</button>
+				<button id="north" name="北區" class="district">北區</button>
+				<button id="south" name="南區" class="district">南區</button>
+				<button id="east" name="東區" class="district">東區</button>
+				<button id="annan" name="安南區" class="district">安南區</button>
+				<button id="Yongkang" name="永康區" class="district">永康區</button>
+			</div>
+			<div class="container">
+				<button id="Anping" name="安平區" class="district">安平區</button>
+				<button id="Ryuaki" name="龍崎區" class="district">龍崎區</button>
+				<button id="Guanmiao" name="關廟區" class="district">關廟區</button>
+				<button id="Guiren" name="歸仁區" class="district">歸仁區</button>
+				<button id="Rende" name="仁德區" class="district">仁德區</button>
+				<button id="nanhua" name="南化區" class="district">南化區</button>
+			</div>
+			<div class="container">
+				<button id="Nanxi" name="楠西區" class="district">楠西區</button>
+				<button id="Yujing" name="玉井區" class="district">玉井區</button>
+				<button id="Shanshang" name="山上區" class="district">山上區</button>
+				<button id="Anting" name="安定區" class="district">安定區</button>
+				<button id="Sinshih" name="新市區" class="district">新市區</button>
+				<button id="Shanhua" name="善化區" class="district">善化區</button>
+			</div>
+			<div class="container">
+				<button id="Xinhua" name="新化區" class="district">新化區</button>
+				<button id="Beimen" name="北門區" class="district">北門區</button>
+				<button id="Jiangjun" name="將軍區" class="district">將軍區</button>
+				<button id="Qigu" name="七股區" class="district">七股區</button>
+				<button id="Xigang" name="西港區" class="district">西港區</button>
+				<button id="Xuejia" name="學甲區" class="district">學甲區</button>
+			</div>
+			<div class="container">
+				<button id="Jiali" name="佳里區" class="district">佳里區</button>
+				<button id="Danei" name="大內區" class="district">大內區</button>
+				<button id="Guantian" name="官田區" class="district">官田區</button>
+				<button id="Xiaying" name="下營區" class="district">下營區</button>
+				<button id="Liujia" name="六甲區" class="district">六甲區</button>
+				<button id="Madou" name="麻豆區" class="district">麻豆區</button>
+			</div>
+			<div class="container">
+				<button id="Dongshan" name="東山區" class="district">東山區</button>
+				<button id="Houbi" name="後壁區" class="district">後壁區</button>
+				<button id="Liuying" name="柳營區" class="district">柳營區</button>
+				<button id="Baihe" name="白河區" class="district">白河區</button>
+				<button id="Yanshui" name="鹽水區" class="district">鹽水區</button>
+				<button id="Hsinying" name="新營區" class="district">新營區</button>
+			</div>
+		</div>
+		<div class="show"></div>
+		<div id="map_info" class="pos"></div>
+		<div id="map"></div>
+		<button id="toTop">Top</button>
+	<script src="result.js"></script>
+</body>
+</html>
